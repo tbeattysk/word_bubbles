@@ -1,0 +1,21 @@
+{
+  "name": "word_bubbles",
+  "description": "",
+  "main": "index.html",
+  "authors": [
+    "Tyler Beatty <tbeatty.sk@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/tbeattysk/word_bubbles",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "jasmine-core": "jasmine#^2.4.1"
+  }
+}

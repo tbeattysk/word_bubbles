@@ -1,0 +1,22 @@
+{
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {},
+  "name": "word_bubbles",
+  "version": "1.0.0",
+  "main": "index.html",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbeattysk/word_bubbles.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tbeattysk/word_bubbles/issues"
+  },
+  "homepage": "https://github.com/tbeattysk/word_bubbles#readme",
+  "description": ""
+}
