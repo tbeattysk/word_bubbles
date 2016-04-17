@@ -1,0 +1,36 @@
+<html>
+<script type="text/javascript" src="src/FieldItems.js"></script>
+<script type="text/javascript" src="src/SimFieldEngine.js"></script>
+<script type="text/javascript" src="src/SimController.js"></script>
+<body>
+<canvas id="canvas" width="300" height="500"></canvas>
+<input id="control" type="button" value="On"/>
+<input id="addItem" type="button" value="Add"/>
+<script type="text/javascript">
+	var sim = new SimController(document.getElementById('canvas').getContext('2d'));
+	var drawing = false;
+	var animation
+	document.getElementById("addItem").onclick = addNewItem;
+	document.getElementById("control").onclick = startStop;
+	function startStop(){
+		if(!drawing){
+			drawing = true;
+			animation = setInterval(sim.draw.bind(sim), 10);
+			document.getElementById("control").value = "Off"
+		} 
+		else {
+			drawing = false;
+			clearInterval(animation);
+			document.getElementById("control").value = "On"
+		}
+	}
+	
+	function addNewItem(){
+		setInterval(sim.addObject(), 100);
+		console.log(sim.objects.length);
+	}
+		// local live reload
+		// document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
+</script>
+</body>
+</html>
