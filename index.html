@@ -3,14 +3,19 @@
 <script type="text/javascript" src="src/SimFieldEngine.js"></script>
 <script type="text/javascript" src="src/SimController.js"></script>
 <body>
-<canvas id="canvas" width="300" height="500"></canvas>
+<div>
 <input id="control" type="button" value="On"/>
-<input id="addItem" type="button" value="Add"/>
+<input id="addSmall" type="button" value="Small"/>
+<input id="addLarge" type="button" value="Large"/>
+</div>
+<canvas id="canvas" width="500" height="500"></canvas>
+
 <script type="text/javascript">
 	var sim = new SimController(document.getElementById('canvas').getContext('2d'));
 	var drawing = false;
 	var animation
-	document.getElementById("addItem").onclick = addNewItem;
+	document.getElementById("addSmall").onclick = addNewSmall;
+	document.getElementById("addLarge").onclick = addNewLarge;
 	document.getElementById("control").onclick = startStop;
 	function startStop(){
 		if(!drawing){
@@ -25,12 +30,17 @@
 		}
 	}
 	
-	function addNewItem(){
-		setInterval(sim.addObject(), 100);
+	function addNewSmall(){
+		setInterval(sim.addObject(5,5), 100);
 		console.log(sim.objects.length);
 	}
-		// local live reload
-		// document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')
+
+	function addNewLarge(){
+		setInterval(sim.addObject(50,20), 100);
+		console.log(sim.objects.length);
+	}
+		/*// local live reload
+		 document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')*/
 </script>
 </body>
 </html>

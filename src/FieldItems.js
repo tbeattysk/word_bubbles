@@ -1,19 +1,23 @@
 class FieldObject{
-	constructor(x,y,vx,vy,width,height){
+	constructor(x,y,width,height){
 		this.x = x;
 		this.y = y;
-		this.vx = vx;
-		this.vy = vy
+		this.vx = Math.random();
+		this.vy = Math.random();
 		this.w = width; 
 		this.h = height;
+		this.held = false;
+		this.heldDown = false;
+		this.mouseX;
+		this.mouseY;
 	}
 	
 	//Returns the field potential as the inverse
 	getPotential(absX, absY, strength){
-		var relX = Math.abs(absX - this.x);
-		var relY = Math.abs(absY - this.y);
-		if(relX > this.w/2 || relY > this.h/2){
-			return strength/(Math.sqrt(relX*relX+relY*relY));
+		var relX = Math.abs(absX - this.x)-this.w/4;
+		var relY = Math.abs(absY - this.y)-this.h/4;
+		if(this.held){
+			return 5*strength/(Math.sqrt(relX*relX+relY*relY));
 		}
 		else return strength/(Math.sqrt(relX*relX+relY*relY));
 	}
@@ -32,7 +36,32 @@ class FieldObject{
 
 	//for the given force this function calculates the average of the force and 
 	//velocity vector for the new velocity vector.
-	getNextLocation(force, distance){
+	getNextLocation(force, distance, mouseX, mouseY, mouseDown, heldState){
+		if(this.heldDown || mouseX>this.x && mouseX<(this.x+this.w) && mouseY>this.y && mouseY<(this.y+this.h) && (!heldState || this.held)){
+			var dx = 0;
+			var dy = 0;
+			if(mouseDown){
+				dx = mouseX - this.mouseX;
+				dy = mouseY - this.mouseY;
+			}
+			this.mouseX = mouseX;
+			this.mouseY = mouseY;
+			this.nextX = this.x + dx;
+			this.nextY = this.y + dy;
+			if(mouseDown){
+				this.heldDown = true;
+			}
+			else this.heldDown = false;
+			this.held = true;
+
+			return{
+				x: this.nextX,
+				y: this.nextY,
+				w: this.w,
+				h: this.h
+			}	
+		}
+		else this.held = false;
 		var sumX = force.fx * 0.0001 * distance + this.vx; 
 		var sumY = force.fy * 0.0001 * distance + this.vy;
 		var mag = Math.sqrt(sumX * sumX + sumY * sumY);
@@ -42,7 +71,9 @@ class FieldObject{
 		this.nextY = this.y + (this.nextVy);
 		return {
 			x: this.nextX,
-			y: this.nextY
+			y: this.nextY,
+			w: this.w,
+			h: this.h
 		}
 	}
 }
@@ -56,11 +87,10 @@ class FieldBackground{
 	
 	//Returns the field potential as spherical where center is zero
 	getPotential(absX, absY){
-		if(absX > 0 && absX < this.w && absY > 0 && absY< this.h){
-			var fromCx = absX-this.w/2;
-			var fromCy = absY-this.h/2;
-			return (fromCx*fromCx+fromCy*fromCy)
-		}
-		else return (fromCx*fromCx+fromCy*fromCy)
+			var fromCx = Math.abs(absX-this.w/2);
+			var fromCy = Math.abs(absY-this.h/2);
+			//return Math.pow(fromCx,2)+Math.pow(fromCy,2)
+			return Math.sqrt(Math.pow(fromCx,4)+Math.pow(fromCy,4))
+
 	}
 }
