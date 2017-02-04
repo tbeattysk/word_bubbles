@@ -34,12 +34,12 @@ class SimController{
 	}
 
 	addObject(sizeX,sizeY){
-		this.load("http://randomword.setgetgo.com/get.php", create.bind(this));
+		this.load("http://www.setgetgo.com/randomword/get.php", create.bind(this));
 
 		function create(resp){
 			console.log(resp.response)
-			var x = this.w * Math.random(); //Uh Oh
-			var y = this.h * Math.random();
+			const x = this.w * Math.random(); //Uh Oh
+			const y = this.h * Math.random();
 			this.titles.push(resp.response)
 			this.ctx.font = "16px Arial";
 			console.log(this.ctx.measureText(resp.response).width)
@@ -66,7 +66,7 @@ class SimController{
 
 	//load from http://code.tutsplus.com/articles/how-to-make-ajax-requests-with-raw-javascript--net-4855
 	load(url, callback) {
-        var xhr;
+        let xhr;
          
         if(typeof XMLHttpRequest !== 'undefined') xhr = new XMLHttpRequest();
         else {
@@ -76,7 +76,7 @@ class SimController{
                             "MSXML2.XmlHttp.2.0",
                             "Microsoft.XmlHttp"]
  
-             for(var i = 0, len = versions.length; i < len; i++) {
+             for(let i = 0, len = versions.length; i < len; i++) {
                 try {
                     xhr = new ActiveXObject(versions[i]);
                     break;

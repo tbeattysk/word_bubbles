@@ -23,12 +23,12 @@ class SimEngine{
     }
 
     isAnyObjectHeld(){
-        var held = false
-        this.objects.forEach(function(object, obj){
+        let held = false
+        this.objects.forEach(object=>{
             if(object.held){
                 held = true
             }
-        })
+        });
         return held;
     }
     //adds an object
