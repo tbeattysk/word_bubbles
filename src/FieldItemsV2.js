@@ -5,6 +5,8 @@ class FieldObject{
 		this.y = y;
 		this.vx = Math.random();
 		this.vy = Math.random();
+		this.ax = 0;
+		this.ay = 0;
 		this.w = width; 
 		this.h = height;
 		this.held = false;
@@ -37,7 +39,6 @@ class FieldObject{
 		//check if user has clicked and held this object
 		//if it was held down on the last loop, or if there is a new click
 		//how we update this.mouseX will change position only if mouse down
-		console.log(force);
 		if(this.heldDown || (!heldState || this.held) && mouseX>this.x && mouseX<(this.x+this.w) && mouseY>this.y && mouseY<(this.y+this.h) ){
 			if(mouseDown){
 				this.nextX = this.x + mouseX - this.mouseX;
@@ -58,24 +59,85 @@ class FieldObject{
 		}
 		else this.held = false;
 		//distance * unit vector to move 1px per cycle
-		this.nextVx = distance * (force.fx * 0.0001 + this.vx) 
-						/ Math.sqrt((force.fx * 0.0001 + this.vx) 
-						* (force.fx * 0.0001 + this.vx) 
-						+ (force.fy * 0.0001 + this.vy) 
-						* (force.fy * 0.0001 + this.vy));
-		this.nextVy = distance * (force.fy * 0.0001 + this.vy) 
-						/ Math.sqrt((force.fx * 0.0001 + this.vx) 
-						* (force.fx * 0.0001 + this.vx) 
-						+ (force.fy * 0.0001 + this.vy) 
-						* (force.fy * 0.0001 + this.vy));
-		this.nextX = this.x + (this.nextVx);
-		this.nextY = this.y + (this.nextVy);
+		let forceX = force.fx;
+		let forceY = force.fy;
+		let ax = forceX*0.00001;
+		let ay = forceY*0.00001;
+		//console.log(ax +" " +ay);
+		let vx = this.vx + ax;
+		let vy = this.vy + ay;
+		let vtotal = Math.sqrt(vx*vx + vy*vy);
+		//console.log(vtotal)
+		if(vtotal > 2 || vtotal < -2){
+			//console.log("max");
+			vx = 2 * (forceX * 0.0001 + this.vx) 
+						/ Math.sqrt((forceX * 0.0001 + this.vx) 
+						* (forceX * 0.0001 + this.vx) 
+						+ (forceY * 0.0001 + this.vy) 
+						* (forceY * 0.0001 + this.vy));
+			vy = 2 * (forceY * 0.0001 + this.vy) 
+						/ Math.sqrt((forceX * 0.0001 + this.vx) 
+						* (forceX * 0.0001 + this.vx) 
+						+ (forceY * 0.0001 + this.vy) 
+						* (forceY * 0.0001 + this.vy));
+		}/*else if(vtotal<0.3 && vtotal>0.03){
+			console.log("min");
+			vx = 0.3 * (forceX * 0.0001 + this.vx) 
+						/ Math.sqrt((forceX * 0.0001 + this.vx) 
+						* (forceX * 0.0001 + this.vx) 
+						+ (forceY * 0.0001 + this.vy) 
+						* (forceY * 0.0001 + this.vy));
+			vy = 0.3 * (forceY * 0.0001 + this.vy) 
+						/ Math.sqrt((forceX * 0.0001 + this.vx) 
+						* (forceX * 0.0001 + this.vx) 
+						+ (forceY * 0.0001 + this.vy) 
+						* (forceY * 0.0001 + this.vy));
+		}*/
+		//console.log(this.nextX+" x "+this.x)
+
+		this.nextX = this.x + (vx);
+		this.nextY = this.y + (vy);
+		this.vx = vx;
+		this.vy = vy;
 		return {
 			x: this.nextX,
 			y: this.nextY,
 			w: this.w,
 			h: this.h
 		}
+	}
+
+	changeAccel(forceX, forceY){
+		let ax = forceX*0.0001;
+		let ay = forceY*0.0001;
+		console.log(ax +" " +ay);
+		let vx = ax + this.vx;
+		let vy = ay + this.vy;
+		let vtotal = sqrt(vx*vx + vy*vy);
+		if(vtotal > 1 || vtotal < -1){
+			vx = 1 * (ax + this.vx) 
+						/ Math.sqrt((ax + this.vx) 
+						* (ax + this.vx) 
+						+ (ay + this.vy) 
+						* (ay + this.vy));
+			vy = 1 * (ay + this.vy) 
+						/ Math.sqrt((ax + this.vx) 
+						* (ax + this.vx) 
+						+ (ay + this.vy) 
+						* (ay + this.vy));
+		}/*else if(vtotal<0.3 && vtotal>0.03){
+			console.log(min);
+			vx = 0.3 * (forceX * 0.0001 + this.vx) 
+						/ Math.sqrt((forceX * 0.0001 + this.vx) 
+						* (forceX * 0.0001 + this.vx) 
+						+ (forceY * 0.0001 + this.vy) 
+						* (forceY * 0.0001 + this.vy));
+			vy = 0.3 * (forceY * 0.0001 + this.vy) 
+						/ Math.sqrt((forceX * 0.0001 + this.vx) 
+						* (forceX * 0.0001 + this.vx) 
+						+ (forceY * 0.0001 + this.vy) 
+						* (forceY * 0.0001 + this.vy));
+		}*/
 	}
 }
 
@@ -92,7 +154,7 @@ class FieldBackground{
 	//Returns the field potential as spherical where center is zero
 	getPotential(absX, absY){
 			//return Math.pow(fromCx,2)+Math.pow(fromCy,2)
-			return Math.sqrt(Math.pow(Math.abs(absX-this.w/2),4)+Math.pow(Math.abs(absY-this.h/2),4))
+			return 5*Math.sqrt(Math.pow(Math.abs(absX-this.w/2),4)+Math.pow(Math.abs(absY-this.h/2),4))
 
 	}
 }

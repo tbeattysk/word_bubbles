@@ -1,0 +1,144 @@
+<html>
+<script type="text/javascript" src="src/FieldItems.js"></script>
+<script type="text/javascript" src="src/SimFieldEngine.js"></script>
+<script type="text/javascript" src="src/SimController.js"></script>
+<script type="text/javascript" src="src/three.min.js"></script>
+<script type="text/javascript" src="src/Tween.js"></script>
+<body>
+
+<!--<canvas id="canvas" width="500" height="500" style="z-index:0; position:absolute; top:0; left:0;"></canvas>-->
+<div style="z-index:1; position:relative;">
+<input style="z-index:1; " id="control" type="button" value="On"/>
+<input id="addLarge" type="button" value="Add"/>
+</div>
+<script type="text/javascript">
+    var scene, camera, renderer;
+    var geometry, material, mesh;
+
+    init();
+    animate();
+
+    function init() {
+
+        scene = new THREE.Scene();
+
+        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 900 );
+        camera.position.z = 800;
+
+        var x = document.createElement("canvas");
+        var xc = x.getContext("2d");
+        x.width = 400
+        x.height = 200;
+        xc.fillStyle ="white";
+        xc.fillRect(0,0,400,200);
+        xc.fillStyle = "black";
+        xc.font = "120pt sans-serif";
+        xc.fillText('Tyler', 30, 145);
+
+       
+        
+        var backgroundMesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(2000, 2000, 0),
+            new THREE.MeshLambertMaterial({
+                color:  0x99999
+            }));
+
+
+        backgroundMesh.receiveShadow = true;
+        scene.add(backgroundMesh);
+
+        var xm = new THREE.MeshLambertMaterial({ map: new THREE.Texture(x), transparent: false, });
+        xm.map.needsUpdate = true;
+        var materials = [
+            new THREE.MeshLambertMaterial( { color: 0xffffff } ), // right
+            new THREE.MeshLambertMaterial( { color: 0xffffff } ), // left
+            new THREE.MeshLambertMaterial( { color: 0xffffff } ), // top
+            new THREE.MeshLambertMaterial( { color: 0xffffff } ), // bottom
+            new THREE.MeshLambertMaterial(xm), // back
+            new THREE.MeshLambertMaterial( { color: 0xffffff } )  // front
+        ];
+
+        var cubeSidesMaterial = new THREE.MultiMaterial( materials );
+
+        mesh = new THREE.Mesh(new THREE.CubeGeometry(200, 100,0), cubeSidesMaterial);
+        mesh.position.x = -400;
+        mesh.position.y = 0;
+        mesh.position.z = 10;
+        mesh.doubleSided = true;
+        mesh.castShadow = true;
+        scene.add(mesh);
+        
+         const pointLight = new THREE.PointLight(0xFFFFFF);
+         const dirLight = new THREE.AmbientLight(0xFFFFFF);
+
+        // set its position
+        pointLight.position.x = 10;
+        pointLight.position.y = 10;
+        pointLight.position.z = 100;
+        pointLight.castShadow = true;
+        // add to the scene
+        scene.add(pointLight);
+        scene.add(dirLight);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.shadowMap.enabled = true;
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+        document.body.appendChild( renderer.domElement );
+
+    }
+
+    function animate() {
+
+        requestAnimationFrame( animate );
+
+         mesh.position.x += .1;
+         mesh.position.y +=  .2;
+
+        renderer.render( scene, camera );
+
+    }
+	/*var sim = new SimController(document.getElementById('canvas').getContext('2d'));
+	var drawing = false;
+	var animation
+	document.getElementById("addLarge").onclick = addNewLarge;
+	document.getElementById("control").onclick = startStop;
+	function startStop(){
+		if(!drawing){
+			drawing = true;
+			animation = requestAnimationFrame(sim.draw.bind(sim));
+			document.getElementById("control").value = "Off"
+		} 
+		else {
+			drawing = false;
+			cancelAnimationFrame(animation);
+			document.getElementById("control").value = "On"
+		}
+	}
+	
+	function addNewSmall(){
+		sim.addObject(5,5);
+		console.log(sim.objects.length);
+	}
+
+	function addNewLarge(){
+		sim.addObject(50,30);
+		console.log(sim.objects.length);
+	}
+	var canvas = document.getElementById("canvas");
+	resize_canvas();
+
+	// Attempt at auto-resize
+	function resize_canvas(){
+		canvas.width  = window.innerWidth;
+		canvas.height = window.innerHeight; // less any menus
+		sim.resize(canvas.width,canvas.height)
+	}
+	window.addEventListener("resize", resize_canvas);
+	window.addEventListener("orientationchange", resize_canvas);
+		/* local live reload
+		 document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')*/
+</script>
+
+</body>
+</html>

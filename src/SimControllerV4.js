@@ -1,6 +1,6 @@
 'use strict';
 class SimController{
-	constructor(ctx, e){
+	constructor(pg, e){
 		//this.e = e;
 		window.addEventListener('mousemove', this.getMousePos.bind(this));
 		window.addEventListener('mousedown', this.setMouseDown.bind(this));
@@ -8,11 +8,9 @@ class SimController{
 		this.mouseX = 0;
 		this.mouseY = 0;
 		this.mouseDown = false;
-		this.ctx = ctx;
+		this.pg = pg;
 		this.w = window.innerWidth;
 		this.h = window.innerWidth;
-		this.objects = new Array;
-		this.titles = new Array;
 		this.engine = new SimEngine(this.w,this.h);
 	}
 	resize(w,h){
@@ -21,9 +19,9 @@ class SimController{
 		this.engine.resize(w,h);
 	}
 	getMousePos(evt) {
-		if(evt.target.id == "canvas"){
-		    this.mouseX = evt.clientX - this.ctx.canvas.offsetLeft;
-		    this.mouseY = evt.clientY - this.ctx.canvas.offsetTop;
+		if(evt.srcElement.className == "word"){
+		    this.mouseX = evt.clientX - this.pg.offsetLeft;
+		    this.mouseY = evt.clientY - this.pg.offsetTop;
 	    }
 	}
 	setMouseDown(evt){
@@ -36,37 +34,31 @@ class SimController{
 	getEngine(){
 		return "Engine is running!";
 	}
-
+	//TODO: why is sizeX/Y being used for location?
 	addObject(sizeX,sizeY){
 		this.load("http://www.setgetgo.com/randomword/get.php", create.bind(this));
 
 		function create(resp){
 			const word = resp.response.toUpperCase()
-			const x = this.w * Math.random(); //Uh Oh
-			const y = this.h * Math.random();
-			this.titles.push(word)
-			this.ctx.font = "24px Arial";
-			console.log(this.ctx.measureText(word).width)
-			this.objects.push({x:x-sizeX/2,y:y-sizeY/2, w:this.ctx.measureText(word).width +10, h:sizeY});
-			this.engine.addObject(new FieldObject(x,y,this.ctx.measureText(word).width+10,sizeY,this.engine.objField));
+			const x = Math.floor(this.w * Math.random()); //Uh Oh
+			const y = Math.floor(this.h * Math.random());
+			var para = document.createElement("p");
+			para.draggable = true;
+			para.classList.add("word");
+			para.style.height="20px";
+			var node = document.createTextNode(word);
+			para.appendChild(node);
+			this.pg.appendChild(para);
+			this.engine.addObject(new FieldObject(x,y,para.clientWidth,para.clientHeight,this.engine.objFieldX, this.engine.objFieldY, para));
+			para.style.transform="translate("+x+"px, "+y+"px)";
 		}
 	}
 
 	draw(){
-		this.ctx.clearRect(0,0,this.w,this.h);
-		this.objects.forEach((object,i,a)=>{
-
-			this.ctx.fillStyle="#fff";
-			//this.ctx.rect(object.x, object.y, object.w+2, object.h+2);
-		},this);
-		this.objects.forEach((object,i,a)=>{
-			this.ctx.fillStyle="#fff";
-			this.ctx.fillRect(object.x, object.y, object.w, object.h);
-			this.ctx.stroke();
-			this.ctx.fillStyle="#000";
-			this.ctx.font = "24px Arial";
-			this.ctx.fillText(this.titles[i],object.x + 5,object.y + object.h - 5);
-		}, this);
+		this.engine.objects.forEach((object,i,a)=>{
+			object.el.style.transform="translate("+object.x+"px,"+object.y+"px)";
+			//console.log(object.el.style.transform)
+		});
 		animation = requestAnimationFrame(sim.draw.bind(sim));
 		this.objects =  this.engine.getNextFrame(1, this.mouseX, this.mouseY, this.mouseDown)
 	}

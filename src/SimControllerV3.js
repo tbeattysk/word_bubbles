@@ -48,7 +48,7 @@ class SimController{
 			this.ctx.font = "24px Arial";
 			console.log(this.ctx.measureText(word).width)
 			this.objects.push({x:x-sizeX/2,y:y-sizeY/2, w:this.ctx.measureText(word).width +10, h:sizeY});
-			this.engine.addObject(new FieldObject(x,y,this.ctx.measureText(word).width+10,sizeY,this.engine.objField));
+			this.engine.addObject(new FieldObject(x,y,this.ctx.measureText(word).width+10,sizeY,this.engine.objFieldX, this.engine.objFieldY));
 		}
 	}
 
@@ -61,11 +61,11 @@ class SimController{
 		},this);
 		this.objects.forEach((object,i,a)=>{
 			this.ctx.fillStyle="#fff";
-			this.ctx.fillRect(object.x, object.y, object.w, object.h);
+			this.ctx.fillRect(object.x-object.w/2, object.y, object.w, object.h);
 			this.ctx.stroke();
 			this.ctx.fillStyle="#000";
 			this.ctx.font = "24px Arial";
-			this.ctx.fillText(this.titles[i],object.x + 5,object.y + object.h - 5);
+			this.ctx.fillText(this.titles[i],object.x - object.w/2 + 5,object.y + object.h - 5);
 		}, this);
 		animation = requestAnimationFrame(sim.draw.bind(sim));
 		this.objects =  this.engine.getNextFrame(1, this.mouseX, this.mouseY, this.mouseDown)

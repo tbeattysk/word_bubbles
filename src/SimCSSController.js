@@ -1,30 +1,26 @@
 'use strict';
 class SimController{
-	constructor(ctx, e){
-		//this.e = e;
+	constructor(w,h,elList){
+		this.elList=elList
 		window.addEventListener('mousemove', this.getMousePos.bind(this));
 		window.addEventListener('mousedown', this.setMouseDown.bind(this));
 		window.addEventListener('mouseup', this.setMouseUp.bind(this));
 		this.mouseX = 0;
 		this.mouseY = 0;
 		this.mouseDown = false;
-		this.ctx = ctx;
-		this.w = window.innerWidth;
-		this.h = window.innerWidth;
+        this.buttons = Object.keys(elList).reduce((p,c)=>{
+            if(elList[c].localName === "button") p[c]=elList[c];
+            return p;
+        }, {});
+        console.log(this.buttons);        
 		this.objects = new Array;
 		this.titles = new Array;
 		this.engine = new SimEngine(this.w,this.h);
 	}
-	resize(w,h){
-		this.w=w;
-		this.h = h;
-		this.engine.resize(w,h);
-	}
+	
 	getMousePos(evt) {
-		if(evt.target.id == "canvas"){
-		    this.mouseX = evt.clientX - this.ctx.canvas.offsetLeft;
-		    this.mouseY = evt.clientY - this.ctx.canvas.offsetTop;
-	    }
+		    this.mouseX = evt.clientX;
+		    this.mouseY = evt.clientY;
 	}
 	setMouseDown(evt){
 		this.mouseDown=true;
@@ -41,30 +37,33 @@ class SimController{
 		this.load("http://www.setgetgo.com/randomword/get.php", create.bind(this));
 
 		function create(resp){
-			const word = resp.response.toUpperCase()
+			//console.log(resp.response)
 			const x = this.w * Math.random(); //Uh Oh
 			const y = this.h * Math.random();
-			this.titles.push(word)
-			this.ctx.font = "24px Arial";
-			console.log(this.ctx.measureText(word).width)
-			this.objects.push({x:x-sizeX/2,y:y-sizeY/2, w:this.ctx.measureText(word).width +10, h:sizeY});
-			this.engine.addObject(new FieldObject(x,y,this.ctx.measureText(word).width+10,sizeY,this.engine.objField));
+			this.titles.push(resp.response)
+            
+            var newbtn = document.createElement("BUTTON");
+            newbtn.appendChild(document.createTextNode(resp.response))
+			document.getElementById("wordswarm").appendChild(newbtn);
+			//this.ctx.font = "16px Arial";
+			//console.log(this.ctx.measureText(resp.response).width)
+			//console.log(newbtn.getBoundingClientRect().height);
+			this.objects.push({x:x-sizeX/2,y:y-sizeY/2, w:newbtn.getBoundingClientRect().width, h: newbtn.getBoundingClientRect().height});
+			this.engine.addObject(new FieldObject(x,y,newbtn.getBoundingClientRect().width,newbtn.getBoundingClientRect().height));
 		}
 	}
 
 	draw(){
 		this.ctx.clearRect(0,0,this.w,this.h);
 		this.objects.forEach((object,i,a)=>{
-
-			this.ctx.fillStyle="#fff";
-			//this.ctx.rect(object.x, object.y, object.w+2, object.h+2);
-		},this);
-		this.objects.forEach((object,i,a)=>{
-			this.ctx.fillStyle="#fff";
+			this.ctx.fillStyle="#FF0";
 			this.ctx.fillRect(object.x, object.y, object.w, object.h);
+			this.ctx.beginPath();
+			this.ctx.rect(object.x, object.y, object.w, object.h);
+			this.ctx.closePath();
 			this.ctx.stroke();
 			this.ctx.fillStyle="#000";
-			this.ctx.font = "24px Arial";
+			this.ctx.font = "16px Arial";
 			this.ctx.fillText(this.titles[i],object.x + 5,object.y + object.h - 5);
 		}, this);
 		animation = requestAnimationFrame(sim.draw.bind(sim));

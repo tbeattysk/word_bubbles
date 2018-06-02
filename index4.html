@@ -1,22 +1,33 @@
 <html>
-<script type="text/javascript" src="src/FieldItems.js"></script>
-<script type="text/javascript" src="src/SimFieldEngine.js"></script>
-<script type="text/javascript" src="src/SimController.js"></script>
+ <script src="https://polygit.org/webcomponentsjs+1.0.0-rc.5/components/webcomponentsjs/webcomponents-loader.js"></script>
+<script type="text/javascript" src="src/FieldItemsV4.js"></script>
+<script type="text/javascript" src="src/SimFieldEngine4.js"></script>
+<script type="text/javascript" src="src/SimControllerV4.js"></script>
 <body>
 <style>
 body {
   background: #e2e1e0;
   text-align: center;
 }
+div #playground{
+	position: relative;
+}
+div p{
+	position: absolute;
+	display: block;
+	font-family: arial;
+	cursor: default;
+}
 </style>
-<canvas id="canvas" width="500" height="500" style="z-index:0; position:absolute; top:0; left:0;"></canvas>
+<div id="playground" style="z-index:0; position:absolute; top:0; left:0;">
+</div>
 <div style="z-index:1; position:relative;">
 <input style="z-index:1; " id="control" type="button" value="On"/>
 <input id="addLarge" type="button" value="Add"/>
 </div>
 <script type="text/javascript">
 
-	var sim = new SimController(document.getElementById('canvas').getContext('2d'));
+	var sim = new SimController(document.getElementById('playground'));
 	var drawing = false;
 	var animation
 	document.getElementById("addLarge").onclick = addNewLarge;
@@ -36,24 +47,22 @@ body {
 	
 	function addNewSmall(){
 		sim.addObject(5,5);
-		console.log(sim.objects.length);
 	}
 
 	function addNewLarge(){
-		sim.addObject(50,30);
-		console.log(sim.objects.length);
+		sim.addObject(20,30);
 	}
-	var canvas = document.getElementById("canvas");
-	resize_canvas();
+	var playground = document.getElementById("playground");
+	resize_playground();
 
 	// Attempt at auto-resize
-	function resize_canvas(){
-		canvas.width  = window.innerWidth;
-		canvas.height = window.innerHeight; // less any menus
-		sim.resize(canvas.width,canvas.height)
+	function resize_playground(){
+		playground.width  = window.innerWidth;
+		playground.height = window.innerHeight; // less any menus
+		sim.resize(playground.width,playground.height)
 	}
-	window.addEventListener("resize", resize_canvas);
-	window.addEventListener("orientationchange", resize_canvas);
+	window.addEventListener("resize", resize_playground);
+	window.addEventListener("orientationchange", resize_playground);
 		/*// local live reload
 		 document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')*/
 </script>
